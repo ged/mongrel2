@@ -1,3 +1,5 @@
+#undef KAZLIB_OPAQUE_DEBUG
+
 /*
  * Hash Table Data Type
  * Copyright (C) 1997 Kaz Kylheku <kaz@ashi.footprints.net>
@@ -14,7 +16,7 @@
  * into proprietary software; there is no requirement for such software to
  * contain a copyright notice related to this source.
  *
- * $Id: hash.h,v dbb93d5e6777 2011/03/21 11:25:51 josh> $
+ * $Id: hash.h,v 81e8de280c84 2011/03/28 20:23:06 josh> $
  * $Name: kazlib_1_20 $
  */
 
