@@ -14,7 +14,7 @@
  * into proprietary software; there is no requirement for such software to
  * contain a copyright notice related to this source.
  *
- * $Id: hash.c,v 81e8de280c84 2011/03/28 20:23:06 josh> $
+ * $Id: hash.c,v 6c9e33f53ed7 2011/06/12 19:03:31 zedshaw $
  * $Name: kazlib_1_20 $
  */
 
@@ -26,7 +26,7 @@
 #include "hash.h"
 
 #ifdef KAZLIB_RCSID
-static const char rcsid[] = "$Id: hash.c,v 81e8de280c84 2011/03/28 20:23:06 josh> $";
+static const char rcsid[] = "$Id: hash.c,v 6c9e33f53ed7 2011/06/12 19:03:31 zedshaw $";
 #endif
 
 #define INIT_BITS	6
@@ -77,7 +77,7 @@ static int hash_comp_default(const void *key1, const void *key2);
  */
 
 #if 0
-Fixed for our usage -josh
+    Fixed for our usage -josh
 static void compute_bits(void)
 {
     hash_val_t val = HASH_VAL_T_MAX;	/* 1 */
@@ -299,7 +299,7 @@ hash_t *hash_create(hashcount_t maxcount, hash_comp_t compfun,
 
     // Fixed size for our usage
     //if (hash_val_t_bit == 0)	/* 1 */
-	//compute_bits();
+    //compute_bits();
 
     hash = malloc(sizeof *hash);	/* 2 */
 
@@ -406,7 +406,7 @@ hash_t *hash_init(hash_t *hash, hashcount_t maxcount,
 {
     // Fixed size for our usage.
     //if (hash_val_t_bit == 0)	/* 1 */
-	//compute_bits();
+    //compute_bits();
 
     assert (is_power_of_two(nchains));
 
