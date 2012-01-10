@@ -215,7 +215,7 @@ void tickertask(void *v)
 }
 
 
-int attempt_chroot_drop(Server *srv)
+int attempt_chroot_drop(Server *srv, int nofork)
 {
     int rc = 0;
 
@@ -224,8 +224,13 @@ int attempt_chroot_drop(Server *srv)
         log_info("-- Starting " VERSION ". Copyright (C) Zed A. Shaw. Licensed BSD.\n");
         log_info("-- Look in %s for startup messages and errors.", bdata(srv->error_log));
 
-        rc = Unixy_daemonize();
-        check(rc == 0, "Failed to daemonize, looks like you're hosed.");
+		if (nofork) {
+			rc = chdir("/");
+			check(rc == 0, "Failed to change working directory to '/'.");
+		} else {
+	        rc = Unixy_daemonize();
+	        check(rc == 0, "Failed to daemonize, looks like you're hosed.");
+		}
 
         FILE *log = fopen(bdata(srv->error_log), "a+");
         check(log, "Couldn't open %s log file.", bdata(srv->error_log));
@@ -240,7 +245,7 @@ int attempt_chroot_drop(Server *srv)
         check(rc == 0, "Failed to drop priv to the owner of %s", bdata(&PRIV_DIR));
 
     } else {
-        log_warn("Couldn't chroot too %s, assuming running in test mode.", bdata(srv->chroot));
+        log_warn("Couldn't chroot to %s, assuming running in test mode.", bdata(srv->chroot));
 
         // rewrite the access log to be in the right location
         bstring temp = bformat("%s%s", bdata(srv->chroot), bdata(srv->access_log));
@@ -371,8 +376,19 @@ void taskmain(int argc, char **argv)
 {
     dbg_set_log(stderr);
     int rc = 0;
+    int nofork = 0;
+    const_bstring f_opt = NULL;
 
-    check(argc == 3 || argc == 4, "usage: %s config.sqlite server_uuid [config_module.so]", m2program);
+    if (argc >= 2) {
+        f_opt = bfromcstr(argv[1]);
+        if (bstrncmp(f_opt, bfromcstr("-f"), 2) == 0) {
+            nofork = 1;
+            argv++;
+            argc--;
+        }
+    }
+
+    check(argc == 3 || argc == 4, "usage: %s [-f] config.sqlite server_uuid [config_module.so]", m2program);
 
     if(argc == 4) {
         log_info("Using configuration module %s to load configs.", argv[3]);
@@ -391,7 +407,7 @@ void taskmain(int argc, char **argv)
     rc = clear_pid_file(srv);
     check(rc == 0, "PID file failure, aborting rather than trying to start.");
 
-    rc = attempt_chroot_drop(srv);
+    rc = attempt_chroot_drop(srv, nofork);
     check(rc == 0, "Major failure in chroot/droppriv, aborting."); 
 
     final_setup();
