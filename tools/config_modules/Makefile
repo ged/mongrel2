@@ -17,6 +17,10 @@ mongodb.so: fetch_mongo_c_driver
 mongodb.so: mongodb.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< bson.o encoding.o gridfs.o md5.o mongo.o net.o numbers.o ../../build/libm2.a
 
+postgresql.so: LDFLAGS+= -lpq
+postgresql.so: postgresql.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< ../../build/libm2.a
+
 %.so : %.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< ../../build/libm2.a
 
