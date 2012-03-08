@@ -68,15 +68,27 @@ int
 config_init( const char *conninfo )
 {
     conn = PQconnectdb( conninfo );
+    int res = 0;
 
     if ( PQstatus(conn) != CONNECTION_OK ) {
         log_err( "Connection failed: %s", PQerrorMessage(conn) );
         return -1;
     }
 
+    /* Set notices on the connection to be logged via the mongrel log, and
+    tell the connection to transcode everything to iso-latin1 */
     PQsetNoticeProcessor( conn, config_notice_processor, NULL );
+	res = PQsetClientEncoding( conn, "latin1" );
+    check( res == 0, "Failed to set the client encoding to ISO-Latin1: %s",
+           PQerrorMessage(conn) );
 
     return 0;
+
+error:
+    PQfinish( conn );
+    conn = NULL;
+
+    return -1;
 }
 
 /* Plugin shutdown */
